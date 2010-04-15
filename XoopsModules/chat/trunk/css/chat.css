@@ -1,0 +1,202 @@
+.chatbox {
+	position: fixed;
+	position:expression("absolute");
+	margin-bottom:26px;
+	margin-right:0px;
+	width: 225px;
+	display:none;
+}
+
+.chatboxhead {
+	background-color: #f99d39;
+	padding:7px;
+	color: #ffffff;
+
+	border-right:1px solid #f99d39;
+	border-left:1px solid #f99d39;
+}
+
+.chatboxblink {
+	background-color: #176689;
+	border-right:1px solid #176689;
+	border-left:1px solid #176689;
+}
+
+.chatboxcontent {
+	font-family: arial,sans-serif;
+	font-size: 13px;
+	color: #333333;
+	height:200px;
+	
+	overflow-y:auto;
+	overflow-x:auto;
+	padding:7px;
+	border-left:1px solid #cccccc;
+	border-right:1px solid #cccccc;
+	border-bottom:1px solid #eeeeee;
+	background-color: #ffffff;
+	line-height: 1.3em;
+}
+
+.chatboxinput {
+	padding: 5px;
+	background-color: #ffffff;
+	border-left:1px solid #cccccc;
+	border-right:1px solid #cccccc;
+	border-bottom:1px solid #cccccc;
+}
+
+.chatboxtextarea {
+	width: 206px;
+	height:44px;
+	padding:3px 0pt 3px 3px;
+	border: 1px solid #eeeeee;
+	margin: 1px;
+	overflow:hidden;
+}
+
+.chatboxtextareaselected {
+	border: 2px solid #f99d39;
+	margin:0;
+}
+
+.chatboxmessage {
+	margin-left:1em;
+}
+
+.chatboxinfo {
+	margin-left:-1em;
+	color:#666666;
+
+}
+
+.chatboxmessagefrom {
+	margin-left:-1em;
+	font-weight: bold;
+}
+
+.chatboxmessagecontent {
+}
+
+.chatboxoptions {
+	float: right;
+}
+
+.chatboxoptions a {
+	text-decoration: none;
+	color: white;
+	font-weight:bold;
+	font-family:Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+}
+
+.chatboxtitle {
+	float: left;
+}
+
+#chat_bar_wrap { /* this will ba used as a wrapper for the nav_menu so we can center it (nav_menu). especially for IE */
+	height:24px; /* fix bar's height */
+	width:100%; /* use 100% of width */
+	text-align:center;
+	/* the code below will PUT the bar at the bottom */	
+	bottom:0px;
+	position:absolute;
+	
+	/* hide scrollbar for this wrapper */
+	overflow:hidden;
+}
+
+#chat_bar_wrap #chatbar { /* the menu itself */
+		height:24px; /* fix bar's height */
+		width:90%; /* fixed width */
+
+		/* center this div */
+		margin-left:auto;
+		margin-right:auto;	
+
+	}
+	
+	
+#chatbar{
+	z-index:1;
+	position:absolute;
+	background: #EEEEEE;
+	border-top: 1px solid #666666;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #666666;
+	margin-left:5%;
+	margin-right:5%;
+	padding:3px;
+   -moz-border-radius-topleft: 5px;
+   -moz-border-radius-topright: 5px;
+ 
+}
+
+#chatlist {
+	width:200px;
+	position: fixed;
+	position:expression("absolute");
+	bottom: 0px;
+	margin-bottom:26px;
+	margin-left:60px;
+	background-color:#fefefe;
+	border-bottom: 1px solid #666666;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #666666;
+	text-align:left;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+
+}
+
+#chatlist ul {
+	text-align:left;
+	padding:5px;
+	margin:0px;
+	text-transform:capitalize;
+}
+
+#chatlist ul li{
+	list-style-type:none;
+	height:30px;
+	margin-bottom:5px;
+	display:block;
+	clear:right;
+}
+
+#chatlist a{
+	text-decoration:none;
+}
+
+#chattitle{
+	background-color:#ccc;
+	padding:5px;
+	border-top:1px solid #666;
+	height:20px;
+}
+
+#chatuser{
+	float:left;
+	color:#fff;
+	font-weight:bold;
+}
+
+#closelist{
+	float:right;
+	text-align:right;
+	font-weight:bold;
+}
+
+#chatbutton{
+	float:left;
+	border-right:1px solid #999;
+	padding-right:3px;
+	font-size:14px;
+}
+
+
+.avatar img {
+	width:30px;
+	height:30px;
+	float:left;
+	margin-right:5px;
+}

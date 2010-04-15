@@ -1,0 +1,39 @@
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" media="all" href="./modules/chat/css/screen_ie.css" />
+<![endif]-->
+
+<div id='chatlist'>
+    <div id='chattitle'>
+        <div id='chatuser'><{$username}></div>
+        <div id='closelist'><a href='#' id='close'>X</a></div>
+    </div>	
+    <ul>
+    <{foreach item=chatuser from=$chatusers}>
+    <li><span class="avatar"><img src="<{$chatuser.image}>" alt="<{$chatuser.uname}><{if $chatuser.prettyname}> (<{$chatuser.prettyname}>)<{/if}>"/></span><a href="javascript:void(0)" onclick="javascript:chatWith('<{$chatuser.uname}>')"><{$chatuser.prettyname}></a></li>
+    <{/foreach}>
+    </ul>
+</div>
+    
+    
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#chatlist').hide();
+	$('a').click(function(){
+	$('#chatlist').show();
+	
+});
+	
+	$('a#close').click(function(){
+	$('#chatlist').hide();
+	})
+	
+});
+</script>
+
+<div id="chat_bar_wrap">
+	<div id="chatbar">
+	  <div id="chatbutton"><a href="#" id="click">Chat</a><{if $chatcount > 0}>&nbsp;(<{$chatcount}>)<{/if}></div>
+	  <div class="incoming"></div>
+	</div>
+</div>
