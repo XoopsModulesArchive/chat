@@ -1,39 +1,29 @@
-
-<!--[if lte IE 7]>
-<link type="text/css" rel="stylesheet" media="all" href="./modules/chat/css/screen_ie.css" />
-<![endif]-->
-
-<div id='chatlist'>
-    <div id='chattitle'>
-        <div id='chatuser'><{$username}></div>
-        <div id='closelist'><a href='#' id='close'>X</a></div>
-    </div>	
-    <ul>
-    <{foreach item=chatuser from=$chatusers}>
-    <li><span class="avatar"><img src="<{$chatuser.image}>" alt="<{$chatuser.uname}><{if $chatuser.prettyname}> (<{$chatuser.prettyname}>)<{/if}>"/></span><a href="javascript:void(0)" onclick="javascript:chatWith('<{$chatuser.uname}>')"><{$chatuser.prettyname}></a></li>
-    <{/foreach}>
-    </ul>
+<div>
+<h1><{$smarty.const._MD_CHAT_CHAT}> <img title=<{$smarty.const._MD_CHAT_LOADING}> id="chat_loading" src="<{xoAppUrl /modules/chat/images/ajax-loader.gif}>" alt="" /></h1>
+<div>
+  <div class="chat2">
+    <div id="chat_online"><!-- Сюда мы будем добавлять список онлайн --></div>
+  </div>
+  <div class="chat1">
+    <div id="chat_area"><!-- Сюда мы будем добавлять новые сообщения --></div>
+  </div>
 </div>
-    
-    
-<script type="text/javascript">
-$(document).ready(function(){
-	$('#chatlist').hide();
-	$('a').click(function(){
-	$('#chatlist').show();
-	
-});
-	
-	$('a#close').click(function(){
-	$('#chatlist').hide();
-	})
-	
-});
-</script>
+<form id="pac_form" action=""><!-- Наша форма с именем, сообщением и кнопкой для отправки -->
+<table style="width: 100%;">
+	<tr>
+		<td><{$smarty.const._MD_CHAT_MESSAGE}></td>
+		<td></td>
+        <td></td>
+	</tr>
+	<tr>
+		<!-- Поле ввода сообщения -->
+		<td><input type="text" id="pac_text" class="chat-text" value=""></td>
+		
+		<!-- Кнопка "Отправить" -->
+		<td><input type="submit" value=<{$smarty.const._MD_CHAT_SEND}>></td>
+        <td><img src='<{$xoops_url}>/images/smiley.gif' alt='Смайлы' title='Смайлы' onclick='openWithSelfMain("<{$xoops_url}>/misc.php?action=showpopups&amp;type=smilies&amp;target=pac_text","smilies",300,475);'  onmouseover='style.cursor="hand"'/></td>
+	</tr>
+</table>
+</form>
 
-<div id="chat_bar_wrap">
-	<div id="chatbar">
-	  <div id="chatbutton"><a href="#" id="click">Chat</a><{if $chatcount > 0}>&nbsp;(<{$chatcount}>)<{/if}></div>
-	  <div class="incoming"></div>
-	</div>
 </div>

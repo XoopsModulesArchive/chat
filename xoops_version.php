@@ -1,81 +1,91 @@
 <?php
-/* *********************************************/
-/*                          	TAKEAWEB					*/
-/*        	           http://www.takeaweb       			*/
-/*       					       				*/
-/*           		  Francesco Mulassano   				*/
-/*            		  Alessandro Sturniolo     				*/
-/*                  	        	  2009           				*/
-/* ------------------------------------------------------------------*/
-/*    	      XOOPS - PHP Content Management System    		*/
-/*                  Copyright (c) 2000 XOOPS.org        		*/
-/*                      <http://www.xoops.org/>          			*/
-/* *********************************************/
-if (!defined('XOOPS_ROOT_PATH')) {
-	die('XOOPS root path not defined');
-}
-$modversion['dirname'] = basename(dirname(__FILE__));
-$modversion['name'] = ucfirst(basename(dirname(__FILE__)));
-$modversion['version']     = "0.1";
-$modversion['releasedate'] = "2009-05-26";
-$modversion['status']      = "Alpha 1";
-$modversion['description'] = _MI_TWCHAT_DESC;
-$modversion['credits']     = "Original Script by Anant Garg (http://anantgarg.com/), Xoops porting by Takeaweb.it";
-$modversion['author']      = "Mulassano Francesco - Alessandro Sturniolo - Simon Roberts";
-$modversion['help']        = "";
-$modversion['license']     = "GNU.";
-$modversion['official']    = 0;
-$modversion['image']       = "images/tw_chat.png";
-$modversion['dirname']     = "chat";
+// andrey3761
 
-$modversion['author_realname']     = "Francesco Mulassano";
-$modversion['author_realname']     = "Alessandro Sturniolo";
-$modversion['author_website_url']  = "http://www.takeaweb.it";
-$modversion['author_website_name'] = "Soluzioni informatiche";
-$modversion['author_email']        = "info@takeaweb.it";
-$modversion['demo_site_url']       = "";
-$modversion['demo_site_name']      = "";
-$modversion['support_site_url']    = "http://www.takeaweb.it";
-$modversion['support_site_name']   = "Takeaweb - Soluzioni informatiche";
-$modversion['submit_bug']          = "http://www.takeaweb.it/modules/newbb";
-$modversion['submit_feature']      = "http://www.takeaweb.it/modules/newbb";
+$modversion['name'] = _MI_CHAT_NAME;
+$modversion['version'] = 2.0;
+$modversion['description'] = _MI_CHAT_DESC;
+$modversion['credits'] = "radio-hobby.org";
+$modversion['author'] = "andrey3761";
+$modversion['help'] = "help.html";
+$modversion['license'] = "GPL see LICENSE";
+$modversion['official'] = 0;
+$modversion['image'] = "images/slogo.png";
+$modversion['dirname'] = "chat";
 
-// Developers
-$modversion['contributors']['developers'][0]['name']      = "Francesco Mulassano";
-$modversion['contributors']['developers'][0]['uname']     = "webmaster";
-$modversion['contributors']['developers'][0]['email']     = "info@takeaweb.it";
-$modversion['contributors']['developers'][0]['website']   = "http://www.takeaweb.it";
+// Файл базы данных
+$modversion['sqlfile']['mysql'] = "sql/mysql.sql";
+//$modversion['sqlfile']['postgresql'] = "sql/pgsql.sql";
 
-$modversion['contributors']['developers'][1]['name']      = "Alessandro Sturniolo";
-$modversion['contributors']['developers'][1]['uname']     = "webmaster";
-$modversion['contributors']['developers'][1]['email']     = "alessandro.sturniolo@gmail.com";
-$modversion['contributors']['developers'][1]['website']   = "http://www.takeaweb.it";
+// Таблицы
+$modversion['tables'][0] = "chat_delmsg";
+$modversion['tables'][1] = "chat_message";
+$modversion['tables'][2] = "chat_online";
 
-$modversion['contributors']['developers'][2]['name']      = "Simon Roberts";
-$modversion['contributors']['developers'][2]['uname']     = "wishcraft";
-$modversion['contributors']['developers'][2]['email']     = "simon@xoops.org";
-$modversion['contributors']['developers'][2]['website']   = "http://www.chronolabs.org.au";
-// Testers
-$modversion['contributors']['testers'][0]['name']         = "Francesco Mulassano";
-$modversion['contributors']['testers'][0]['uname']        = "webmaster";
-$modversion['contributors']['testers'][0]['email']        = "info@takeaweb.it";
-$modversion['contributors']['testers'][0]['website']      = "http://www.takeaweb.it";
+// Имеет админку
+$modversion['hasAdmin'] = 1;
+$modversion['adminindex'] = "admin/index.php";
+$modversion['adminmenu'] = "admin/menu.php";
 
-// Main
+// Меню
 $modversion['hasMain'] = 1;
 
-// Mysql file
-$modversion['sqlfile']['mysql'] = "sql/mysql.sql";
+// Search
+$modversion['hasSearch'] = 0;
 
-// Tables created by sql file
-$modversion['tables'][0] = "chat";
+// Comments
+$modversion['hasComments'] = 0;
 
 // Templates
-$i = 0;
-
-$i++;
+$i = 1;
 $modversion['templates'][$i]['file'] = 'chat_index.html';
-$modversion['templates'][$i]['description'] = 'Remember to include in your theme with <em> <{include file="db:chat_index.html"}></em>';
+$modversion['templates'][$i]['description'] = '';
+$i++;
+$modversion['templates'][$i]['file'] = 'chat_admin_index.html';
+$modversion['templates'][$i]['description'] = '';
+$i++;
 
+// Конфигурация
+$i = 1;
+$modversion['config'][$i]['name'] = 'interval';
+$modversion['config'][$i]['title'] = '_MI_CHAT_INTERVAL';
+$modversion['config'][$i]['description'] = '_MI_CHAT_INTERVALDSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = 5000;
+$i++;
+$modversion['config'][$i]['name'] = 'timedelmsg';
+$modversion['config'][$i]['title'] = '_MI_CHAT_TIMEDELMSG';
+$modversion['config'][$i]['description'] = '_MI_CHAT_TIMEDELMSGDSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = 60;
+$i++;
+// Начальный лимит сообщений
+$modversion['config'][$i]['name'] = 'startlimitmsg';
+$modversion['config'][$i]['title'] = '_MI_CHAT_STARTLIMITMSG';
+$modversion['config'][$i]['description'] = '_MI_CHAT_STARTLIMITMSGDSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = 50;
+$i++;
+// Через сколько удалить пользователя из списка онлайн
+$modversion['config'][$i]['name'] = 'ttlonline';
+$modversion['config'][$i]['title'] = '_MI_CHAT_TTLONLINE';
+$modversion['config'][$i]['description'] = '_MI_CHAT_TTLONLINEDSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = 15;
+$i++;
+// Через сколько поставить польователя статус "неактивен"
+$modversion['config'][$i]['name'] = 'timesleep';
+$modversion['config'][$i]['title'] = '_MI_CHAT_TIMESLEEP';
+$modversion['config'][$i]['description'] = '_MI_CHAT_TIMESLEEPDSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = 60;
+$i++;
+
+// Notification
+$modversion['hasNotification'] = 0;
 
 ?>

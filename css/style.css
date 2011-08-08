@@ -1,0 +1,97 @@
+/* Важное свойство */
+
+.chat1 {
+	height: 400px;
+	overflow: auto;
+	position: relative;
+	text-align: left;
+	border: solid #818181 1px;
+	padding-left: 5px;
+
+	/**/
+	-moz-border-radius-topleft: 10px;
+	-khtml-border-radius-topleft: 10px;
+	-webkit-border-radius-topleft: 10px;
+	border-radius-topleft: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	-khtml-border-radius-bottomleft: 10px;
+	-webkit-border-radius-bottomleft: 10px;
+	border-radius-bottomleft: 10px;
+}
+.chat2 {
+	height: 400px;
+	width: 100px;
+	overflow: auto;
+	position: relative;
+	text-align: left;
+	border: solid #818181 1px;
+	float: right;
+	padding-left: 5px;
+	/**/
+	-moz-border-radius-topright  : 10px;
+	-khtml-border-radius-topright  : 10px;
+	-webkit-border-radius-topright  : 10px;
+	border-radius-topright  : 10px;
+	-moz-border-radius-bottomright  : 10px;
+	-khtml-border-radius-bottomright  : 10px;
+	-webkit-border-radius-bottomright  : 10px;
+	border-radius-bottomright  : 10px;
+}
+
+
+.chat1 div {
+	position: absolute;
+}
+
+
+.chat1 span.block {
+	display: block;
+	width: auto;
+}
+/*
+input[type=text],textarea {
+	width: 100%;
+	font: normal normal normal 16px "Trebuchet MS", Arial, Times;
+	border: solid #818181 1px;
+}
+*/
+
+/* Для CSS 3 */
+
+.chat-r4 {}
+/* Цвет фона для "Моих сообщений" */
+.chat-bg-mymsg {
+	background-color : #eeeeee;
+}
+
+.chat-bg-memsg {
+	background-color : #d8d8d8;
+}
+input.chat-text {
+	width: 580px;
+}
+
+/* Уснул */
+.chat-sleep{
+	color:#CDCDCD;
+	font-weight:bold;
+}
+.chat-sleep a{
+	color:#CDCDCD;
+}
+/* класс юзера */
+.chat-user{
+	font-weight:bold;
+}
+.chat-user a{
+}
+
+
+/* Фон для удаления мессаг */
+.chat-bg-delmsg {
+	background-color : #fcf5ca;
+}
+
+#chat_online ul li{
+	list-style: none;
+}

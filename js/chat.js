@@ -1,422 +1,224 @@
-/*
+// Автор: andrey3761
+// Копирайт: xoops.ws
 
-Copyright (c) 2009 Anant Garg (anantgarg.com | inscripts.com)
+$(document).ready(function () {
+    $("#pac_form").submit(Send); // вешаем на форму с именем и сообщением событие которое срабатывает кодга нажата кнопка "Отправить" или "Enter"
+    $("#pac_text").focus(); // по поле ввода сообщения ставим фокус
+	ChatLoad(); // Загружаем содержимое чата
+    setInterval( "ChatLoad();", chat_config_interval ); // создаём таймер который будет вызывать загрузку сообщений каждые 10 секунды (10000 милесукунд)
+});    
 
-This script may be used for non-commercial purposes only. For any
-commercial purposes, please contact the author at 
-anant.garg@inscripts.com
+// Функция для отправки сообщения
+function Send() {
+    // Выполняем запрос к серверу с помощью jquery ajax: $.post(адрес, {параметры запроса}, функция которая вызывается по завершению запроса)
+    $.post("ajax.php",  
+	{
+        act: "send",  // указываем скрипту, что мы отправляем новое сообщение и его нужно записать
+        name: $("#pac_name").val(), // имя пользователя
+        text: $("#pac_text").val() //  сам текст сообщения
+    },
+     ChatLoad ); // по завершению отправки вызвовем функцию загрузки новых сообщений Load()
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-*/
-
-var windowFocus = true;
-var username = '%%username%%';
-var chatHeartbeatCount = 0;
-var minChatHeartbeat = 1000;
-var maxChatHeartbeat = 33000;
-var chatHeartbeatTime = minChatHeartbeat;
-var originalTitle;
-var blinkOrder = 0;
-
-var chatboxFocus = new Array();
-var newMessages = new Array();
-var newMessagesWin = new Array();
-var chatBoxes = new Array();
-
-$(document).ready(function(){
-	originalTitle = document.title;
-	startChatSession();
-
-	$([window, document]).blur(function(){
-		windowFocus = false;
-	}).focus(function(){
-		windowFocus = true;
-		document.title = originalTitle;
-	});
-});
-
-function restructureChatBoxes() {
-	align = 0;
-	for (x in chatBoxes) {
-		chatboxtitle = chatBoxes[x];
-
-		if ($("#chatbox_"+chatboxtitle).css('display') != 'none') {
-			if (align == 0) {
-				$("#chatbox_"+chatboxtitle).css('right', '20px');
-			} else {
-				width = (align)*(225+7)+20;
-				$("#chatbox_"+chatboxtitle).css('right', width+'px');
-			}
-			align++;
-		}
-	}
+    $("#pac_text").val(""); // очистим поле ввода сообщения
+    $("#pac_text").focus(); // и поставим на него фокус
+    
+    return false; // очень важно из Send() вернуть false. Если этого не сделать то произойдёт отправка нашей формы, те страница перезагрузится
 }
 
-function chatWith(chatuser) {
-	createChatBox(chatuser);
-	$("#chatbox_"+chatuser+" .chatboxtextarea").focus();
-}
+var last_message_id = 0; // номер последнего сообщения, что получил пользователь
+var load_in_process = false; // можем ли мы выполнять сейчас загрузку сообщений. Сначала стоит false, что значит - да, можем
+// AJAX индикатор
+//var chat_loading = $("#chat_loading");
 
-function createChatBox(chatboxtitle,minimizeChatBox) {
-	
-	if ($("#chatbox_"+chatboxtitle).length > 0) {
-		if ($("#chatbox_"+chatboxtitle).css('display') == 'none') {
-			$("#chatbox_"+chatboxtitle).css('display','block');
-			restructureChatBoxes();
-		}
-		$("#chatbox_"+chatboxtitle+" .chatboxtextarea").focus();
-		return;
-	}
-		
-	
-	
-	$(" <div />" ).attr("id","chatbox_"+chatboxtitle)
-	.addClass("chatbox")
-	.html('<div class="chatboxhead"><div class="chatboxtitle">'+chatboxtitle+'</div><div class="chatboxoptions"><a href="javascript:void(0)" onclick="javascript:toggleChatBoxGrowth(\''+chatboxtitle+'\')">-</a> <a href="javascript:void(0)" onclick="javascript:closeChatBox(\''+chatboxtitle+'\')">X</a></div><br clear="all"/></div><div class="chatboxcontent"></div><div class="chatboxinput"><textarea class="chatboxtextarea" onkeydown="javascript:return checkChatBoxInputKey(event,this,\''+chatboxtitle+'\');"></textarea></div>')
-	.appendTo($( "body" ));
-			   
-	$("#chatbox_"+chatboxtitle).css('bottom', '0px');
-	$(".chatbox").easydrag();
-	
-	
-	chatBoxeslength = 0;
-
-	for (x in chatBoxes) {
-		if ($("#chatbox_"+chatBoxes[x]).css('display') != 'none') {
-			chatBoxeslength++;
-		}
-	}
-
-	if (chatBoxeslength == 0) {
-		$("#chatbox_"+chatboxtitle).css('right', '20px');
-	} else {
-		width = (chatBoxeslength)*(225+7)+20;
-		$("#chatbox_"+chatboxtitle).css('right', width+'px');
-	}
-	
-	chatBoxes.push(chatboxtitle);
-
-	if (minimizeChatBox == 1) {
-		minimizedChatBoxes = new Array();
-
-		if ($.cookie('chatbox_minimized')) {
-			minimizedChatBoxes = $.cookie('chatbox_minimized').split(/\|/);
-		}
-		minimize = 0;
-		for (j=0;j<minimizedChatBoxes.length;j++) {
-			if (minimizedChatBoxes[j] == chatboxtitle) {
-				minimize = 1;
-			}
-		}
-
-		if (minimize == 1) {
-			$('#chatbox_'+chatboxtitle+' .chatboxcontent').css('display','none');
-			$('#chatbox_'+chatboxtitle+' .chatboxinput').css('display','none');
-		}
-	}
-
-	chatboxFocus[chatboxtitle] = false;
-
-	$("#chatbox_"+chatboxtitle+" .chatboxtextarea").blur(function(){
-		chatboxFocus[chatboxtitle] = false;
-		$("#chatbox_"+chatboxtitle+" .chatboxtextarea").removeClass('chatboxtextareaselected');
-	}).focus(function(){
-		chatboxFocus[chatboxtitle] = true;
-		newMessages[chatboxtitle] = false;
-		$('#chatbox_'+chatboxtitle+' .chatboxhead').removeClass('chatboxblink');
-		$("#chatbox_"+chatboxtitle+" .chatboxtextarea").addClass('chatboxtextareaselected');
-	});
-
-	$("#chatbox_"+chatboxtitle).click(function() {
-		if ($('#chatbox_'+chatboxtitle+' .chatboxcontent').css('display') != 'none') {
-			$("#chatbox_"+chatboxtitle+" .chatboxtextarea").focus();
-		}
-	});
-
-	$("#chatbox_"+chatboxtitle).show();
-}
-
-
-function chatHeartbeat(){
-
-	var itemsfound = 0;
-	
-	if (windowFocus == false) {
- 
-		var blinkNumber = 0;
-		var titleChanged = 0;
-		for (x in newMessagesWin) {
-			if (newMessagesWin[x] == true) {
-				++blinkNumber;
-				if (blinkNumber >= blinkOrder) {
-					document.title = x+' says...';
-					titleChanged = 1;
-					break;	
+// Функция для загрузки сообщений
+function ChatLoad() {
+    // Проверяем можем ли мы загружать сообщения. Это сделанно для того, что бы мы не начали загрузку заново, если старая загрузка ещё не закончилась.
+    if(!load_in_process)
+    {
+	    load_in_process = true; // загрузка началась
+		// Включаем индикатор
+		$("#chat_loading").fadeIn();
+	    // отсылаем запрос серверу, который вернёт нам javascript
+    	$.post("ajax.php", 
+    	{
+      	    act: "load", // указываем на то что это загрузка сообщений
+      	    last: last_message_id, // передаём номер последнего сообщения который получил пользователь в прошлую загрузку
+      	    rand: (new Date()).getTime()
+    	},
+   	    function (result) { // в эту функцию в качестве параметра передаётся javascript код, который мы должны выполнить
+			// *************
+			// Список онлайн
+			// *************
+			
+			if( result["online"] ) {
+			
+				var chat_onlinearr = result["online"];
+				// Список пользователей онлайна
+				var chat_onlielist = "";
+				// Открываем список
+				chat_onlielist += "<ul>";
+				//
+				for ( i = 0; i < chat_onlinearr.length; i++ ) {
+					// Генерируем запись списка
+					chat_onlielist += "<li><span class='" + chat_onlinearr[i]["uclass"] + "' onclick='chat_addText( \"" + chat_onlinearr[i]["uname"] + ":\" )'>" + chat_onlinearr[i]["uname"] + "</span></li>";
+				
 				}
+				// Закрываем список
+				chat_onlielist += "</ul>";
+				
+				// Очищаем список онлайн
+				$("#chat_online").empty();
+				// Добавляем
+				$("#chat_online").append( chat_onlielist );
+			
 			}
-		}
-		
-		if (titleChanged == 0) {
-			document.title = originalTitle;
-			blinkOrder = 0;
-		} else {
-			++blinkOrder;
-		}
-
-	} else {
-		for (x in newMessagesWin) {
-			newMessagesWin[x] = false;
-		}
-	}
-
-	for (x in newMessages) {
-		if (newMessages[x] == true) {
-			if (chatboxFocus[x] == false) {
-				//FIXME: add toggle all or none policy, otherwise it looks funny
-				$('#chatbox_'+x+' .chatboxhead').toggleClass('chatboxblink');
+			
+			// **************
+			// Сообщения чата
+			// **************
+			
+			// Последняя мессага
+			if( result["lastmessid"] ) {
+				last_message_id = result["lastmessid"];
 			}
-		}
-	}
-	
-	$.ajax({
-	  url: "http://127.0.0.1/xoops233/modules/chat/index.php?action=chatheartbeat",
-	  cache: false,
-	  dataType: "json",
-	  success: function(data) {
-
-		$.each(data.items, function(i,item){
-			if (item)	{ // fix strange ie bug
-
-				chatboxtitle = item.f;
-
-				if ($("#chatbox_"+chatboxtitle).length <= 0) {
-					createChatBox(chatboxtitle);
+			// Новые сообщения
+			if( result["message"] ) {
+				// Массив сообщений
+				var chat_messarr = result["message"];
+				// Список сообщений
+				var chat_messlist = "";
+				// Кнопка удалить сообщения
+				var chat_messdel = "";
+				
+				// Перебираем все сообщения
+				for ( i = 0; i < chat_messarr.length; i++ ) {
+					
+					// Можно ли редактировать данное сообщение
+					if ( chat_config_isremove ) {
+						chat_messdel = "<img title='Удалить' onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
+					// Если это сообщение текущего польователя
+					} else if ( chat_config_uid == chat_messarr[i]["uid"] ) {
+						chat_messdel = "<img title='Удалить' onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
+					} else {
+						chat_messdel = "";
+					}
+					
+					chat_messlist += "<span id='messid-" + chat_messarr[i]["messid"] + "' class='block " + chat_messarr[i]["bg"] + "'>" + chat_messdel + "<span onclick='chat_addText(\"|" + chat_messarr[i]["time"] + "|\")'>|" + chat_messarr[i]["time"] + "|</span> <span class='" + chat_messarr[i]["uclass"] + "' onclick='chat_addText( \"" + chat_messarr[i]["uname"] + ":\" )'>" + chat_messarr[i]["uname"] + "</span>: " + chat_messarr[i]["message"] + "</span>";
+					
 				}
-				if ($("#chatbox_"+chatboxtitle).css('display') == 'none') {
-					$("#chatbox_"+chatboxtitle).css('display','block');
-					restructureChatBoxes();
+				// Добавляем
+				$("#chat_area").append( chat_messlist );
+				// Прокручиваем сообщения вниз
+				$(".chat1").scrollTop($(".chat1").get(0).scrollHeight);
+				
+			}
+			
+			// **********************
+			// Сообщения для удаления
+			// **********************
+			if( result["delmess"] ) {
+				
+				// Массив сообщений для удаления
+				var chat_delmess = result["delmess"];
+				// Перебираем все сообщения для удаления
+				for ( i = 0; i < chat_delmess.length; i++ ) {
+					// Удаляем элемент
+					$("#messid-" + chat_delmess[i]).remove();
+					
 				}
 				
-				if (item.s == 1) {
-					item.f = username;
-				}
-
-				if (item.s == 2) {
-					$("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxinfo">'+item.m+'</span></div>');
-				} else {
-					newMessages[chatboxtitle] = true;
-					newMessagesWin[chatboxtitle] = true;
-					$("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessagefrom">'+item.f+':&nbsp;&nbsp;</span><span class="chatboxmessagecontent">'+item.m+'</span></div>');
-				}
-
-				$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);
-				itemsfound += 1;
-			}
-		});
-
-		chatHeartbeatCount++;
-
-		if (itemsfound > 0) {
-			chatHeartbeatTime = minChatHeartbeat;
-			chatHeartbeatCount = 1;
-		} else if (chatHeartbeatCount >= 10) {
-			chatHeartbeatTime *= 2;
-			chatHeartbeatCount = 1;
-			if (chatHeartbeatTime > maxChatHeartbeat) {
-				chatHeartbeatTime = maxChatHeartbeat;
-			}
-		}
-		
-		setTimeout('chatHeartbeat();',chatHeartbeatTime);
-	}});
-
-}
-
-function closeChatBox(chatboxtitle) {
-	$('#chatbox_'+chatboxtitle).css('display','none');
-	restructureChatBoxes();
-
-	$.post("http://127.0.0.1/xoops233/modules/chat/index.php?action=closechat", { chatbox: chatboxtitle} , function(data){	
-	});
-
-}
-
-function toggleChatBoxGrowth(chatboxtitle) {
-	if ($('#chatbox_'+chatboxtitle+' .chatboxcontent').css('display') == 'none') {  
-		
-		var minimizedChatBoxes = new Array();
-		
-		if ($.cookie('chatbox_minimized')) {
-			minimizedChatBoxes = $.cookie('chatbox_minimized').split(/\|/);
-		}
-
-		var newCookie = '';
-
-		for (i=0;i<minimizedChatBoxes.length;i++) {
-			if (minimizedChatBoxes[i] != chatboxtitle) {
-				newCookie += chatboxtitle+'|';
-			}
-		}
-
-		newCookie = newCookie.slice(0, -1)
-
-
-		$.cookie('chatbox_minimized', newCookie);
-		$('#chatbox_'+chatboxtitle+' .chatboxcontent').css('display','block');
-		$('#chatbox_'+chatboxtitle+' .chatboxinput').css('display','block');
-		$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);
-	} else {
-		
-		var newCookie = chatboxtitle;
-
-		if ($.cookie('chatbox_minimized')) {
-			newCookie += '|'+$.cookie('chatbox_minimized');
-		}
-
-
-		$.cookie('chatbox_minimized',newCookie);
-		$('#chatbox_'+chatboxtitle+' .chatboxcontent').css('display','none');
-		$('#chatbox_'+chatboxtitle+' .chatboxinput').css('display','none');
-	}
-	
-}
-
-function checkChatBoxInputKey(event,chatboxtextarea,chatboxtitle) {
-	 
-	if(event.keyCode == 13 && event.shiftKey == 0)  {
-		message = $(chatboxtextarea).val();
-		message = message.replace(/^\s+|\s+$/g,"");
-
-		$(chatboxtextarea).val('');
-		$(chatboxtextarea).focus();
-		$(chatboxtextarea).css('height','44px');
-		if (message != '') {
-			$.post("http://127.0.0.1/xoops233/modules/chat/index.php?action=sendchat", {to: chatboxtitle, message: message} , function(data){
-				message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
-				$("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessagefrom">'+username+':&nbsp;&nbsp;</span><span class="chatboxmessagecontent">'+message+'</span></div>');
-				$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);
-			});
-		}
-		chatHeartbeatTime = minChatHeartbeat;
-		chatHeartbeatCount = 1;
-
-		return false;
-	}
-
-	var adjustedHeight = chatboxtextarea.clientHeight;
-	var maxHeight = 94;
-
-	if (maxHeight > adjustedHeight) {
-		adjustedHeight = Math.max(chatboxtextarea.scrollHeight, adjustedHeight);
-		if (maxHeight)
-			adjustedHeight = Math.min(maxHeight, adjustedHeight);
-		if (adjustedHeight > chatboxtextarea.clientHeight)
-			$(chatboxtextarea).css('height',adjustedHeight+8 +'px');
-	} else {
-		$(chatboxtextarea).css('overflow','auto');
-	}
-	 
-}
-
-function startChatSession(){  
-	$.ajax({
-	  url: "http://127.0.0.1/xoops233/modules/chat/index.php?action=startchatsession",
-	  cache: false,
-	  dataType: "json",
-	  success: function(data) {
- 
-		username = data.username;
-
-		$.each(data.items, function(i,item){
-			if (item)	{ // fix strange ie bug
-
-				chatboxtitle = item.f;
-
-				if ($("#chatbox_"+chatboxtitle).length <= 0) {
-					createChatBox(chatboxtitle,1);
-				}
 				
-				if (item.s == 1) {
-					item.f = username;
-				}
-
-				if (item.s == 2) {
-					$("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxinfo">'+item.m+'</span></div>');
-				} else {
-					$("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessagefrom">'+item.f+':&nbsp;&nbsp;</span><span class="chatboxmessagecontent">'+item.m+'</span></div>');
-				}
 			}
-		});
-		
-		for (i=0;i<chatBoxes.length;i++) {
-			chatboxtitle = chatBoxes[i];
-			$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);
-			setTimeout('$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);', 100); // yet another strange ie bug
-		}
-	
-	setTimeout('chatHeartbeat();',chatHeartbeatTime);
-		
-	}});
-}
-
-/**
- * Cookie plugin
- *
- * Copyright (c) 2006 Klaus Hartl (stilbuero.de)
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
- *
- */
-
-jQuery.cookie = function(name, value, options) {
-    if (typeof value != 'undefined') { // name and value given, set cookie
-        options = options || {};
-        if (value === null) {
-            value = '';
-            options.expires = -1;
-        }
-        var expires = '';
-        if (options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
-            var date;
-            if (typeof options.expires == 'number') {
-                date = new Date();
-                date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
-            } else {
-                date = options.expires;
-            }
-            expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
-        }
-        // CAUTION: Needed to parenthesize options.path and options.domain
-        // in the following expressions, otherwise they evaluate to undefined
-        // in the packed version for some reason...
-        var path = options.path ? '; path=' + (options.path) : '';
-        var domain = options.domain ? '; domain=' + (options.domain) : '';
-        var secure = options.secure ? '; secure' : '';
-        document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
-    } else { // only name given, get cookie
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+			
+			
+			// Прокручиваем сообщения вниз
+		    //$(".chat1").scrollTop($(".chat1").get(0).scrollHeight);
+			// Отключаем индикатор
+			$("#chat_loading").fadeOut();
+			//
+		    load_in_process = false; // говорим что загрузка закончилась, можем теперь начать новую загрузку
+    	}, "json");
     }
-};
+}
 
+// Кликабельные ники
+function chat_addText( addText ) {
+	//Текущий текст
+	var currentMessage = xoopsGetElementById("pac_text").value;
+	// Прибавляем к тексту строку
+	xoopsGetElementById("pac_text").value = currentMessage + addText + " ";
+	// Ставим фокус в поле ввода текста
+	$("#pac_text").focus();
+	return;
+}
 
+//
+function ChatFocus() {
+	// Выполняем запрос к серверу
+    $.post("ajax.php",  
+	{
+		act: "focus"  // указываем скрипту, что мы отправляем статус
+	}, ChatLoad );
+
+    return false; // очень важно из Send() вернуть false. Если этого не сделать то произойдёт отправка нашей формы, те страница перезагрузится
+}
+function ChatBlur() {
+	// Выполняем запрос к серверу
+    $.post("ajax.php",  
+	{
+		act: "blur"  // указываем скрипту, что мы отправляем статус
+	},
+	function (result) {
+		
+	});
+
+    return false; // очень важно из Send() вернуть false. Если этого не сделать то произойдёт отправка нашей формы, те страница перезагрузится
+}
+// Удаление элемента
+function ChatDeleteMessage( messid ) {
+	// Уникальный идентификатор сообщения
+	var messageid = $("#messid-" + messid);
+	// Подсвечиваем сообщение
+	messageid.addClass('chat-bg-delmsg');
+	
+	//alert( elemid );
+	if ( confirm( "Вы действительно хотите удалить сообщение #" + messid + "?" ) ) {
+		
+		// Выполняем запрос к серверу
+		$.post("ajax.php",  
+		{
+			act: "remove",  // указываем скрипту, что мы хотим удалить сообщение
+			messid: messid // ID сообщения
+		},
+		function (result) {
+			// result - булевая переменная. Если удалось удалить true. В случии неудачи false
+			if( result ) {
+				//alert("");
+				// Удаляем элемент
+				messageid.remove();
+			} else {
+				// Убираем выделение
+				messageid.removeClass('chat-bg-delmsg');
+				//
+				//alert("Не удалось удалить");
+			}
+			
+			
+		}, "json");
+		
+		// Удаляем элемент
+		//messageid.remove();
+		
+		//return true;
+	} else {
+		// Убираем выделение
+		messageid.removeClass('chat-bg-delmsg');
+		
+		//return false;
+	}
+	
+}
+
+// События
+window.onfocus = ChatFocus;
+window.onblur = ChatBlur;
