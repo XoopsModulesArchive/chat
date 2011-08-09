@@ -13,15 +13,14 @@ $act = isset($_POST['act']) ? $myts->addSlashes($_POST['act']) : '';
 // Данные о пользователе
 $uid = is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getVar('uid') : 0;
 $groups = is_object( $xoopsUser ) ? $xoopsUser->getGroups() : XOOPS_GROUP_ANONYMOUS;
+$uname = is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getVar('uname') : 'Гость';
+$time = time();
 
 // Имя папки
 $dirname = 'chat';
 //
 $gperm_handler =& xoops_gethandler('groupperm');
 
-
-$uname = is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getVar('uname') : 'Гость';
-$time = time();
 $ip = xoops_getenv('REMOTE_ADDR');
 // Константы
 $cache_lm_key = 'chat_lm_id';
@@ -55,7 +54,10 @@ switch ( $act ) {
 		// Массив выходных параметров
 		$ret = array();
 		
-		// Список онлайн
+		// ===================
+		// == Список онлайн ==
+		// ===================
+		
 		// Тайаут на удаления пользователя из списка онлайн
 		$time_upd = $time - xoops_getModuleOption( 'ttlonline', $dirname );
 		// Удаляем всех, кто не проявлял активность N сек
@@ -127,7 +129,7 @@ switch ( $act ) {
 		if( $last_message_id < $messid || $messid == 0 || $last_message_id == 0) {
 	
 			// выполняем запрос к базе данных для получения 10 сообщений последних сообщений с номером большим чем $last_message_id
-			$sql = "SELECT * FROM " . $GLOBALS['xoopsDB']->prefix('chat_message') . " WHERE messid > $last_message_id ORDER BY messid DESC";
+			$sql = "SELECT * FROM " . $GLOBALS['xoopsDB']->prefix('chat_message') . " WHERE messid > $last_message_id AND deleted = 0 ORDER BY messid DESC";
 			$result = $GLOBALS['xoopsDB']->query( $sql, $limit, $start );
 			
 			// проверяем есть ли какие-нибудь новые сообщения
@@ -186,7 +188,7 @@ switch ( $act ) {
 		}
 		
 		// ==========================================
-		// Если есть сообщения для удаления
+		// ==== Если есть сообщения для удаления ====
 		// ==========================================
 		
 		//
@@ -262,8 +264,9 @@ switch ( $act ) {
 		
 		// Провера на удаление массаг
 		if( $allow_remove ) {
-			// Удаляем сообщение
-			$sql = 'DELETE FROM ' . $GLOBALS['xoopsDB']->prefix('chat_message') . ' WHERE messid = ' . $messid;
+			// Помечаем сообщение как удалённое
+			$sql = 'UPDATE ' . $GLOBALS['xoopsDB']->prefix('chat_message') . ' SET `deleted` = 1, `deleted_uid` = ' . $uid . ' WHERE `messid` = ' . $messid;
+			
 			// Если удалось удалить
 			if( $GLOBALS['xoopsDB']->query($sql) ){
 				
