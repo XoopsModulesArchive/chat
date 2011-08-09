@@ -3,14 +3,17 @@
 // Автор: andrey3761
 // Копирайт: xoops.ws
  
-include 'header.php';
+include 'admin_header.php';
+// Admin Gui
+$indexAdmin = new ModuleAdmin();
+
 // Подключаем форму прав
 include_once $GLOBALS['xoops']->path( 'class/xoopsform/grouppermform.php' );
 
-// Заголовок админки
+// Заголовок страницы
 xoops_cp_header();
-// Меню
-loadModuleAdminMenu( 2, _AM_CHAT_BC_PERM );
+// Меню страницы
+echo $indexAdmin->addNavigation('idea.php');
 
 echo '<br /><br /><br />';
 
@@ -32,7 +35,9 @@ echo $permForm->render();
 echo "<br /><br /><br /><br />\n";
 unset ( $permForm );
 
-// Подвал админки
+// Текст в подвале админки
+include "admin_footer.php";
+//
 xoops_cp_footer();
 
 ?>

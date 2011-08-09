@@ -1,16 +1,36 @@
 <?php
 // andrey3761
 
+if (!defined('XOOPS_ROOT_PATH')) {
+	die('XOOPS root path not defined');	
+}
+$moduleDirName = basename( dirname( __FILE__ ) ) ;
+
 $modversion['name'] = _MI_CHAT_NAME;
-$modversion['version'] = 2.0;
+$modversion['version'] = 2.1;
 $modversion['description'] = _MI_CHAT_DESC;
 $modversion['credits'] = "radio-hobby.org";
-$modversion['author'] = "andrey3761";
-$modversion['help'] = "help.html";
-$modversion['license'] = "GPL see LICENSE";
+$modversion['author'] = 'andrey3761';
+$modversion['nickname'] = '';
+$modversion['help'] = 'page=help';
+$modversion['license'] = 'GNU GPL 2.0';
+$modversion['license_url'] = "www.gnu.org/licenses/gpl-2.0.html/";
 $modversion['official'] = 0;
 $modversion['image'] = "images/slogo.png";
 $modversion['dirname'] = "chat";
+$modversion['dirmoduleadmin'] = 'Frameworks/moduleclasses';
+$modversion['icons16'] = 'Frameworks/moduleclasses/icons/16';
+$modversion['icons32'] = 'Frameworks/moduleclasses/icons/32';
+
+// О модуле
+$modversion["module_website_url"] = "xoops.ws";
+$modversion["module_website_name"] = "XOOPS.WebSite";
+$modversion["release_date"] = "2011/08/08";
+$modversion["module_status"] = "Beta";
+$modversion["author_website_url"] = "radio-hobby.org";
+$modversion["author_website_name"] = "andrey3761";
+$modversion['min_php']='5.2';
+$modversion['min_xoops']="2.3";
 
 // Файл базы данных
 $modversion['sqlfile']['mysql'] = "sql/mysql.sql";
@@ -28,6 +48,8 @@ $modversion['adminmenu'] = "admin/menu.php";
 
 // Меню
 $modversion['hasMain'] = 1;
+// Отображать меню в админке
+$modversion['system_menu'] = 1;
 
 // Search
 $modversion['hasSearch'] = 0;

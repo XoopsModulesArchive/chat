@@ -8,9 +8,14 @@ define("_MI_CHAT_NAME","Chat");
 // Описание модуля
 define("_MI_CHAT_DESC","Chat");
 
-define("_MI_CHAT_ADMENU0", "Home");
-define("_MI_CHAT_ADMENU1", "History");
-define("_MI_CHAT_ADMENU2", "Permissions");
+define("_MI_CHAT_ADMIN_HOME", "Home");
+define("_MI_CHAT_ADMIN_HOME_DESC", "Go back to Home");
+define("_MI_CHAT_ADMIN_HISTORY", "History");
+define("_MI_CHAT_ADMIN_HISTORY_DESC", "Message history");
+define("_MI_CHAT_ADMIN_PERM", "Permissions");
+define("_MI_CHAT_ADMIN_PERM_DESC", "Access permissions");
+define("_MI_CHAT_ADMIN_ABOUT" , "About");
+define("_MI_CHAT_ADMIN_ABOUT_DESC" , "About this module");
 
 // Конфигурация
 define("_MI_CHAT_INTERVAL", "Update interval of chat");
