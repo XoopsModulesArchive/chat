@@ -4,10 +4,16 @@
 // Копирайт: xoops.ws
 
 define("_MD_CHAT_ACCESSONLYUSERS", "Access to the chat is only registered users");
-define("_MD_CHAT_MESSAGE", "Message:"); //Сообщение:
-define("_MD_CHAT_SEND", "Send"); //Отправить
-define("_MD_CHAT_CHAT", "Chat!"); //Чат!
-define("_MD_CHAT_LOADING", "Loading..."); //Идёт загрузка...
+define("_MD_CHAT_MESSAGE", "Message:");
+define("_MD_CHAT_SEND", "Send");
+define("_MD_CHAT_CHAT", "Chat!");
+define("_MD_CHAT_LOADING", "Loading...");
+
+// JS
+define("_MD_CHAT_CONFIRMDELETE", "Remove this message?");
+define("_MD_CHAT_DELETE", "Delete?");//Удалить
+
+
 
 //<{$smarty.const._MD_CHAT_LOADING}>
 ?>

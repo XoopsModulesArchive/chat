@@ -35,6 +35,13 @@ $js .= '
 var chat_config_isremove = ' . $perm_remove . ';
 ';
 
+// Языковые константы
+$js .= '
+// Языковые константы
+var chat_lang_confirmdelete = "' . _MD_CHAT_CONFIRMDELETE . '";
+var chat_lang_delete = "' . _MD_CHAT_DELETE . '";
+';
+
 //
 echo $js;
 

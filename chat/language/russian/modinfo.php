@@ -8,11 +8,6 @@ define("_MI_CHAT_NAME","Чат");
 // Описание модуля
 define("_MI_CHAT_DESC","Чат");
 
-// ======================================
-define("_MI_CHAT_ADMENU0", "Главная");
-define("_MI_CHAT_ADMENU1", "История");
-define("_MI_CHAT_ADMENU2", "Права");
-
 define("_MI_CHAT_ADMIN_HOME", "Главная");
 define("_MI_CHAT_ADMIN_HOME_DESC", "На главную");
 define("_MI_CHAT_ADMIN_HISTORY", "История");
@@ -21,7 +16,6 @@ define("_MI_CHAT_ADMIN_PERM", "Права");
 define("_MI_CHAT_ADMIN_PERM_DESC", "Права доступа");
 define("_MI_CHAT_ADMIN_ABOUT" , "О модуле");
 define("_MI_CHAT_ADMIN_ABOUT_DESC" , "Информация о модуле");
-// ======================================
 
 // Конфигурация
 define("_MI_CHAT_INTERVAL", "Интервал обновления чата");
