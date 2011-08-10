@@ -95,10 +95,10 @@ function ChatLoad() {
 					
 					// Можно ли редактировать данное сообщение
 					if ( chat_config_isremove ) {
-						chat_messdel = "<img title='Удалить' onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
+						chat_messdel = "<img title="+chat_lang_delete+" onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
 					// Если это сообщение текущего польователя
 					} else if ( chat_config_uid == chat_messarr[i]["uid"] ) {
-						chat_messdel = "<img title='Удалить' onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
+						chat_messdel = "<img title="+chat_lang_delete+" onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
 					} else {
 						chat_messdel = "";
 					}
@@ -182,7 +182,8 @@ function ChatDeleteMessage( messid ) {
 	messageid.addClass('chat-bg-delmsg');
 	
 	//alert( elemid );
-	if ( confirm( "Вы действительно хотите удалить сообщение #" + messid + "?" ) ) {
+	//if ( confirm( "Вы действительно хотите удалить сообщение #" + messid + "?" ) ) {
+	if ( confirm( chat_lang_confirmdelete ) ) {
 		
 		// Выполняем запрос к серверу
 		$.post("ajax.php",  

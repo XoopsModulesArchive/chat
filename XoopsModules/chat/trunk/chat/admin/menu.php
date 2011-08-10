@@ -31,7 +31,7 @@ $i++;
 $adminmenu[$i]['title'] = _MI_CHAT_ADMIN_PERM;
 $adminmenu[$i]['link'] = "admin/perm.php";
 $adminmenu[$i]["desc"] = _MI_CHAT_ADMIN_PERM_DESC;
-$adminmenu[$i]['icon'] = '../../'.$pathImageAdmin.'/permissions.png';
+$adminmenu[$i]['icon'] = 'images/icons/nav_perm.png';
 $i++;
 
 
