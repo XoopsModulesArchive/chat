@@ -11,7 +11,7 @@ if ( file_exists($GLOBALS['xoops']->path('/Frameworks/moduleclasses/moduleadmin/
         include_once $GLOBALS['xoops']->path('/Frameworks/moduleclasses/moduleadmin/moduleadmin.php');
         //return true;
     }else{
-        redirect_header("../../../admin.php", 5, _AM_MODULEADMIN_MISSING, false); 
+        redirect_header("../../../admin.php", 5, _AM_CHAT_MODULEADMIN_MISSING, false); 
         //return false;
     }
 

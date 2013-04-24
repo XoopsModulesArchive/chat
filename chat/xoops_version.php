@@ -25,8 +25,8 @@ $modversion['icons32'] = 'Frameworks/moduleclasses/icons/32';
 // О модуле
 $modversion["module_website_url"] = "xoops.ws";
 $modversion["module_website_name"] = "XOOPS.WebSite";
-$modversion["release_date"] = "2011/08/08";
-$modversion["module_status"] = "Beta";
+$modversion["release_date"] = "2011/08/13";
+$modversion["module_status"] = "Final";
 $modversion["author_website_url"] = "radio-hobby.org";
 $modversion["author_website_name"] = "andrey3761";
 $modversion['min_php']='5.2';

@@ -95,10 +95,10 @@ function ChatLoad() {
 					
 					// Можно ли редактировать данное сообщение
 					if ( chat_config_isremove ) {
-						chat_messdel = "<img title="+chat_lang_delete+" onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
+						chat_messdel = "<img title='" + chat_lang_delete + "' onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
 					// Если это сообщение текущего польователя
 					} else if ( chat_config_uid == chat_messarr[i]["uid"] ) {
-						chat_messdel = "<img title="+chat_lang_delete+" onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
+						chat_messdel = "<img title='" + chat_lang_delete + "' onclick='ChatDeleteMessage( \"" + chat_messarr[i]["messid"] + "\" )' src='./images/close.png' />";
 					} else {
 						chat_messdel = "";
 					}
@@ -181,8 +181,7 @@ function ChatDeleteMessage( messid ) {
 	// Подсвечиваем сообщение
 	messageid.addClass('chat-bg-delmsg');
 	
-	//alert( elemid );
-	//if ( confirm( "Вы действительно хотите удалить сообщение #" + messid + "?" ) ) {
+	// Подтверждение удаления
 	if ( confirm( chat_lang_confirmdelete ) ) {
 		
 		// Выполняем запрос к серверу
@@ -192,16 +191,16 @@ function ChatDeleteMessage( messid ) {
 			messid: messid // ID сообщения
 		},
 		function (result) {
-			// result - булевая переменная. Если удалось удалить true. В случии неудачи false
-			if( result ) {
+			// result - массив с кодом ошибки. Код 0 - ошибок при удалении небыло
+			if( result["err"] == 0 ) {
 				//alert("");
-				// Удаляем элемент
+				// Удаляем элемент из браузера
 				messageid.remove();
 			} else {
 				// Убираем выделение
 				messageid.removeClass('chat-bg-delmsg');
-				//
-				//alert("Не удалось удалить");
+				// Выводим сообщение об ошибке
+				alert( chat_lang_errors[ result["err"] ] );
 			}
 			
 			
