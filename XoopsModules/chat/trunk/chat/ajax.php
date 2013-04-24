@@ -12,14 +12,21 @@ $act = isset($_POST['act']) ? $myts->addSlashes($_POST['act']) : '';
 
 // Данные о пользователе
 $uid = is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getVar('uid') : 0;
-$groups = is_object( $xoopsUser ) ? $xoopsUser->getGroups() : XOOPS_GROUP_ANONYMOUS;
-$uname = is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getVar('uname') : 'Гость';
+$groups = is_object( $GLOBALS['xoopsUser'] ) ? $GLOBALS['xoopsUser']->getGroups() : XOOPS_GROUP_ANONYMOUS;
+$uname = is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getVar('uname') : $GLOBALS['xoopsConfig']['anonymous'];
 $time = time();
 
 // Имя папки
 $dirname = 'chat';
 //
 $gperm_handler =& xoops_gethandler('groupperm');
+
+// Временно: Гостям доступ закрыт
+if( ! is_object( $GLOBALS['xoopsUser'] ) ) exit();
+
+// Права на чтение
+$perm_view = ( $gperm_handler->checkRight( 'chat_perm', 1, $groups, $GLOBALS['xoopsModule']->getVar('mid') ) ) ? true : false ;
+if( ! $perm_view ) exit();
 
 $ip = xoops_getenv('REMOTE_ADDR');
 // Константы
@@ -234,35 +241,57 @@ switch ( $act ) {
 	// Удаляем сообщение
 	case 'remove';
 		
+		// ID сообщения для удаления
 		$messid = isset( $_POST['messid'] ) ? intval( $_POST['messid'] ) : 0;
 		// Проверка на существование messid
+		// Если нет такого сообщения отправить ответ "Не найдено сообщение для удаления"
 		
-		$ret = false;
+		// Сассив выходных данных
+		$ret = array();
+		//
+		$ret['err'] = 0;
 		// Можно ли удалить
 		$allow_remove = false;
 		// Права на удаление сообщений
-		$perm_remove = ( $gperm_handler->checkRight( 'chat_perm', 2, $groups, $xoopsModule->getVar('mid') ) ) ? true : false ;
+		$perm_remove = ( $gperm_handler->checkRight( 'chat_perm', 2, $groups, $GLOBALS['xoopsModule']->getVar('mid') ) ) ? true : false ;
 		
 		// Если есть права на удаление
 		if ( $perm_remove ) {
 			// Разрешаем удалить
 			$allow_remove = true;
-		// Если нет прав на удаление, смотрим, моёли ли это сообщение и не истёк ли срок удаления
+		// Если нет прав на удаление, смотрим, моё ли это сообщение и не истёк ли срок удаления
 		} else {
 			
 			$time_delmsg = $time - xoops_getModuleOption( 'timedelmsg', $dirname );
-			
-			$sql = "SELECT COUNT(*) FROM " . $GLOBALS['xoopsDB']->prefix('chat_message') . " WHERE messid =  '" . $messid . "' AND uid = '" . $uid . "' AND time > " . $time_delmsg;
-			list( $numrows ) = $GLOBALS['xoopsDB']->fetchRow( $GLOBALS['xoopsDB']->query( $sql ) );
-			// Если есть запись удовлетворяющая данному условию
-			if ( $numrows ) {
+			//
+			$sql = "SELECT `uid`, `time`, `deleted` FROM " . $GLOBALS['xoopsDB']->prefix('chat_message') . " WHERE messid =  '" . $messid . "'";
+			$result = $GLOBALS['xoopsDB']->query( $sql );
+			list( $delmsg_uid, $delmsg_time, $delmsg_deleted ) = $GLOBALS['xoopsDB']->fetchRow( $result );
+			// Моё ли это сообщение, и не вышло ли время редактирования
+			if( $delmsg_uid == $uid && $delmsg_time >= $time_delmsg ){
+				
 				// Разрешаем удалить
 				$allow_remove = true;
+			
+			// Если это не моё сообщение
+			} elseif( $delmsg_uid != $uid ) {
+				
+				// Вы не можете удалять чужие сообщения
+				$ret['err'] = 3;
+				
+			// Если истекло время для удаления
+			} elseif( $delmsg_time < $time_delmsg ){
+				
+				// Время для удаления сообщения истекло
+				$ret['err'] = 4;
+				
 			}
+			
+			
 			
 		}
 		
-		// Провера на удаление массаг
+		// Если разрешено удалять
 		if( $allow_remove ) {
 			// Помечаем сообщение как удалённое
 			$sql = 'UPDATE ' . $GLOBALS['xoopsDB']->prefix('chat_message') . ' SET `deleted` = 1, `deleted_uid` = ' . $uid . ' WHERE `messid` = ' . $messid;
@@ -282,14 +311,13 @@ switch ( $act ) {
 					
 				}
 				
-				
-				$ret = true;
+				// Удалить удалось
+				$ret['err'] = 0;
 			} else {
-				$ret = false;
+				// Не удалось удалить из БД
+				$ret['err'] = 2;
 			}
 		
-		} else {
-			$ret = false;
 		}
 		
 		// Возвращаем ответ скрипту через JSON

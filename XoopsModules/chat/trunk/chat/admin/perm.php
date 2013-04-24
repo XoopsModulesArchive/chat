@@ -13,7 +13,7 @@ include_once $GLOBALS['xoops']->path( 'class/xoopsform/grouppermform.php' );
 // Заголовок страницы
 xoops_cp_header();
 // Меню страницы
-echo $indexAdmin->addNavigation('idea.php');
+echo $indexAdmin->addNavigation('perm.php');
 
 echo '<br /><br /><br />';
 
